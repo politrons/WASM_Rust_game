@@ -1,0 +1,15 @@
+{
+  "name": "bevy_wasm_game",
+  "type": "module",
+  "version": "0.1.0",
+  "files": [
+    "bevy_wasm_game_bg.wasm",
+    "bevy_wasm_game.js",
+    "bevy_wasm_game.d.ts"
+  ],
+  "main": "bevy_wasm_game.js",
+  "types": "bevy_wasm_game.d.ts",
+  "sideEffects": [
+    "./snippets/*"
+  ]
+}

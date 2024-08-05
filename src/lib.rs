@@ -15,7 +15,7 @@ pub fn start() {
     App::new()
         .add_plugins(DefaultPlugins.set(WindowPlugin {
             primary_window: Some(Window {
-                resolution: WindowResolution::new(2532., 1170.).into(),
+                resolution: WindowResolution::new(800., 600.).into(),
                 canvas: Some("#bevy-canvas".to_string()),
                 ..default()
             }),

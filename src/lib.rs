@@ -4,7 +4,8 @@ use std::collections::HashMap;
 use std::time::{Duration};
 use bevy::app::PluginGroupBuilder;
 use bevy::prelude::*;
-use bevy::window::WindowResolution;
+use bevy::window::{PrimaryWindow, WindowResolution};
+use bevy::winit::WinitWindows;
 use rand::Rng;
 use crate::GameAction::{UpFist, Down, Fall, Fist, HitFace, Left, Right, Kick, Stand, Up, HitBody, Recovery, Block, Hadoken};
 use crate::GamePlayers::{Enemy, Player};
@@ -15,12 +16,12 @@ pub fn start() {
     App::new()
         .add_plugins(DefaultPlugins.set(WindowPlugin {
             primary_window: Some(Window {
-                resolution: WindowResolution::new(800., 600.).into(),
                 canvas: Some("#bevy-canvas".to_string()),
                 ..default()
             }),
             ..default()
         }))
+        .add_systems(Startup, full_Screen)
         .add_systems(Startup, setup_sprites)
         .add_systems(Startup, setup_fight_audio)
         .add_systems(Update, keyboard_update)
@@ -30,6 +31,14 @@ pub fn start() {
         .add_systems(Update, animate_bar)
         .insert_resource(GameInfo::new())
         .run();
+}
+
+pub fn full_Screen( windows: NonSend<WinitWindows>, window_query: Query<Entity, With<PrimaryWindow>>) {
+    let entity = window_query.single();
+    let raw_window: &winit::window::Window = windows.get_window(entity).unwrap();
+    let height = raw_window.inner_size().height;
+    let width = raw_window.inner_size().width;
+    raw_window.set_inner_size(winit::dpi::LogicalSize::new(width, height));
 }
 
 

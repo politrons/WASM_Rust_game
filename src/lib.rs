@@ -4,7 +4,7 @@ use std::collections::HashMap;
 use std::time::{Duration};
 use bevy::app::PluginGroupBuilder;
 use bevy::prelude::*;
-use bevy::window::{PrimaryWindow, WindowResolution};
+use bevy::window::{PresentMode, PrimaryWindow, WindowMode, WindowResolution};
 use bevy::winit::WinitWindows;
 use rand::Rng;
 use crate::GameAction::{UpFist, Down, Fall, Fist, HitFace, Left, Right, Kick, Stand, Up, HitBody, Recovery, Block, Hadoken};
@@ -14,14 +14,21 @@ use instant::Instant;
 #[wasm_bindgen]
 pub fn start() {
     App::new()
-        .add_plugins(DefaultPlugins.set(WindowPlugin {
-            primary_window: Some(Window {
-                canvas: Some("#bevy-canvas".to_string()),
+        .add_plugins(DefaultPlugins
+            .set(WindowPlugin {
+                primary_window: Some(Window {
+                    canvas: Some("#bevy-canvas".to_string()),
+                    resizable: false,
+                    mode: WindowMode::BorderlessFullscreen,
+                    present_mode: PresentMode::AutoNoVsync,
+                    // Tells wasm to resize the window according to the available canvas
+                    fit_canvas_to_parent: true,
+                    // Tells wasm not to override default event handling, like F5, Ctrl+R etc.
+                    prevent_default_event_handling: false,
+                    ..default()
+                }),
                 ..default()
-            }),
-            ..default()
-        }))
-        .add_systems(Startup, full_screen)
+            }))
         .add_systems(Startup, setup_sprites)
         .add_systems(Startup, setup_fight_audio)
         .add_systems(Update, keyboard_update)
@@ -31,14 +38,6 @@ pub fn start() {
         .add_systems(Update, animate_bar)
         .insert_resource(GameInfo::new())
         .run();
-}
-
-pub fn full_screen(windows: NonSend<WinitWindows>, window_query: Query<Entity, With<PrimaryWindow>>) {
-    let entity = window_query.single();
-    let raw_window: &winit::window::Window = windows.get_window(entity).unwrap();
-    let height = raw_window.inner_size().height;
-    let width = raw_window.inner_size().width;
-    raw_window.set_inner_size(winit::dpi::LogicalSize::new(width, height));
 }
 
 

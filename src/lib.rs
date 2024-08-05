@@ -4,16 +4,23 @@ use std::collections::HashMap;
 use std::time::{Duration};
 use bevy::app::PluginGroupBuilder;
 use bevy::prelude::*;
+use bevy::window::WindowResolution;
 use rand::Rng;
 use crate::GameAction::{UpFist, Down, Fall, Fist, HitFace, Left, Right, Kick, Stand, Up, HitBody, Recovery, Block, Hadoken};
 use crate::GamePlayers::{Enemy, Player};
 use instant::Instant;
 
-
 #[wasm_bindgen]
 pub fn start() {
     App::new()
-        .add_plugins(setup_window())
+        .add_plugins(DefaultPlugins.set(WindowPlugin {
+            primary_window: Some(Window {
+                resolution: WindowResolution::new(2532., 1170.).into(),
+                canvas: Some("#bevy-canvas".to_string()),
+                ..default()
+            }),
+            ..default()
+        }))
         .add_systems(Startup, setup_sprites)
         .add_systems(Startup, setup_fight_audio)
         .add_systems(Update, keyboard_update)
@@ -24,6 +31,7 @@ pub fn start() {
         .insert_resource(GameInfo::new())
         .run();
 }
+
 
 ///  Game logic types
 /// -----------------
@@ -289,7 +297,7 @@ fn animate_enemy(
     asset_server: Res<AssetServer>,
     mut commands: Commands,
     mut game_info: ResMut<GameInfo>,
-    mut query: Query<(&EnemyAnimation, &mut AnimationTimer, &mut TextureAtlasSprite, &mut Transform, )>,
+    mut query: Query<(&EnemyAnimation, &mut AnimationTimer, &mut TextureAtlasSprite, &mut Transform,)>,
 ) {
     for (animation, mut timer, mut sprite, mut transform) in &mut query {
         timer.tick(time.delta());
@@ -328,7 +336,7 @@ fn animate_enemy(
 
 fn animate_background(
     time: Res<Time>,
-    mut query: Query<(&BackgroundPlayerAnimation, &mut AnimationTimer, &mut TextureAtlasSprite, &mut Transform, )>,
+    mut query: Query<(&BackgroundPlayerAnimation, &mut AnimationTimer, &mut TextureAtlasSprite, &mut Transform,)>,
 ) {
     for (animation, mut timer, mut sprite, mut transform) in &mut query {
         timer.tick(time.delta());
@@ -466,7 +474,7 @@ fn enemy_attack_logic(
                 HIT_FACE.clone()
             }
             _ => {
-                if game_info.turn_time.lt(&Instant::now(), ) {
+                if game_info.turn_time.lt(&Instant::now()) {
                     game_info.turn_time = Instant::now() + Duration::from_secs(2);
                     throw_dice()
                 } else {
@@ -757,7 +765,7 @@ fn game_bar_spawn(commands: &mut Commands, game_player: GamePlayers, sprite: Spr
 }
 
 /// Setup of the App Window where using [WindowPlugin] we set the [Window] type with [title] and [resolution].
-fn setup_window() -> (PluginGroupBuilder, ) {
+fn setup_window() -> (PluginGroupBuilder,) {
     (
         DefaultPlugins.set(WindowPlugin {
             primary_window: Some(Window {

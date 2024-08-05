@@ -21,7 +21,7 @@ pub fn start() {
             }),
             ..default()
         }))
-        .add_systems(Startup, full_Screen)
+        .add_systems(Startup, full_screen)
         .add_systems(Startup, setup_sprites)
         .add_systems(Startup, setup_fight_audio)
         .add_systems(Update, keyboard_update)
@@ -33,7 +33,7 @@ pub fn start() {
         .run();
 }
 
-pub fn full_Screen( windows: NonSend<WinitWindows>, window_query: Query<Entity, With<PrimaryWindow>>) {
+pub fn full_screen(windows: NonSend<WinitWindows>, window_query: Query<Entity, With<PrimaryWindow>>) {
     let entity = window_query.single();
     let raw_window: &winit::window::Window = windows.get_window(entity).unwrap();
     let height = raw_window.inner_size().height;
